@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
         if (newsController.isLoading && newsController.articles.isEmpty) {
           return Center(child: CircularProgressIndicator()); // Initial loading
         } else if (newsController.articles.isEmpty) {
-          return Center(child: Text("No images found"));
+          return Center(child: CircularProgressIndicator());
         }
 
         return ListView.builder(
@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> {
                   padding: EdgeInsets.all(10.0),
                   child: CircularProgressIndicator(),
                 ),
-              ) : SizedBox(); // Don't show anything if not loading
+              ) : SizedBox();
             }
 
             var article = newsController.articles[index];

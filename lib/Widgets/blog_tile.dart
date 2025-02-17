@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:get/get.dart';
 
-class BlogTile extends StatelessWidget {
+class BlogTile extends StatefulWidget {
   final String photographer;
   final String title;
-  final String? imageUrl; // Nullable for safety
+  final String imageUrl;
 
   const BlogTile({
     required this.photographer,
@@ -14,7 +15,17 @@ class BlogTile extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _BlogTileState createState() => _BlogTileState();
+}
+
+class _BlogTileState extends State<BlogTile> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => false; // Do not keep items loaded when offscreen
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Container(
       margin: EdgeInsets.only(bottom: 10.0),
       child: Padding(
@@ -27,11 +38,10 @@ class BlogTile extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ✅ Image with Loading & Error Handling
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: imageUrl ?? '', // Ensuring safe null handling
+                    imageUrl: widget.imageUrl,
                     height: 150,
                     width: 150,
                     fit: BoxFit.cover,
@@ -45,21 +55,18 @@ class BlogTile extends StatelessWidget {
                       height: 150,
                       width: 150,
                       color: Colors.grey[300],
-                      child: Center(
-                        child: Icon(Icons.broken_image, color: Colors.red, size: 30),
-                      ),
+                      child: Center(child: Icon(Icons.broken_image, color: Colors.red, size: 30)),
                     ),
                   ),
                 ),
                 SizedBox(width: 10.0),
 
-                // ✅ Title & Photographer Details
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        title,
+                        widget.title,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -70,7 +77,7 @@ class BlogTile extends StatelessWidget {
                       ),
                       SizedBox(height: 7.0),
                       Text(
-                        "By $photographer",
+                        "By ${widget.photographer}",
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
