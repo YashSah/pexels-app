@@ -19,18 +19,18 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     scrollController = ScrollController();
 
-    scrollController.addListener(() {
-      double maxScroll = scrollController.position.maxScrollExtent;
-      double currentScroll = scrollController.position.pixels;
+    scrollController.addListener(_onScroll);
+  }
 
-      if (currentScroll >= maxScroll - 200 && !newsController.isLoading) {
-        // ✅ Debounce scrolling: Fetch data only if scrolling stops for 500ms
-        _fetchTimer?.cancel();
+  void _onScroll() {
+    if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200) {
+      if (!newsController.isLoading.value && _fetchTimer == null) {
         _fetchTimer = Timer(Duration(milliseconds: 500), () {
-          newsController.fetchImages();
+          newsController.fetchArticles();
+          _fetchTimer = null;
         });
       }
-    });
+    }
   }
 
   @override
@@ -60,35 +60,37 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         elevation: 0.0,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          newsController.page.value = 1; // Reset page
-          newsController.articles.clear(); // Clear previous data
-          newsController.fetchImages(); // Reload data
-        },
-        child: Icon(Icons.refresh),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () async {
+      //     newsController.page.value = 1; // Reset page
+      //     newsController.articles.clear(); // Clear previous data
+      //
+      //     // Ensure UI updates before fetching new articles
+      //     newsController.isLoading.value = true;
+      //
+      //     await newsController.fetchArticles();
+      //     newsController.update();
+      //   },
+      //   child: Icon(Icons.refresh),
+      // ),
       body: Obx(() {
-        if (newsController.isLoading && newsController.articles.isEmpty) {
+        if (newsController.isLoading.value && newsController.articles.isEmpty) {
           return Center(child: CircularProgressIndicator()); // Initial loading
         } else if (newsController.articles.isEmpty) {
-          return Center(child: CircularProgressIndicator());
+          return Center(child: Text("No articles available")); // Better empty state handling
         }
 
         return ListView.builder(
           controller: scrollController,
-          itemCount: newsController.isLoading
-              ? newsController.articles.length + 1
-              : newsController.articles.length,
+          itemCount: newsController.articles.length + (newsController.isLoading.value ? 1 : 0),
           itemBuilder: (context, index) {
             if (index == newsController.articles.length) {
-              return newsController.isLoading
-                  ? Center(
+              return Center(
                 child: Padding(
                   padding: EdgeInsets.all(10.0),
                   child: CircularProgressIndicator(),
                 ),
-              ) : SizedBox();
+              );
             }
 
             var article = newsController.articles[index];
