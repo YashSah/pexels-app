@@ -95,6 +95,7 @@ class _HomePageState extends State<HomePage> {
             var article = newsController.articles[index];
 
             return BlogTile(
+              key: ValueKey("${article.urlToImage}-$index"), // Ensuring unique keys
               photographer: article.photographer ?? "Unknown Photographer",
               imageUrl: article.urlToImage ?? "",
               title: article.title ?? "No Title",

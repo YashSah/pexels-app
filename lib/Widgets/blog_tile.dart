@@ -13,13 +13,16 @@ class BlogTile extends StatefulWidget {
   _BlogTileState createState() => _BlogTileState();
 }
 
-class _BlogTileState extends State<BlogTile> {
+class _BlogTileState extends State<BlogTile> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => false; // Do not persist images
   bool _isVisible = false;
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required when using KeepAlive
     return VisibilityDetector(
-      key:  Key(widget.imageUrl), // use a stable key
+      key: ValueKey(widget.imageUrl),
       onVisibilityChanged: (info) {
         if (mounted) {
           bool isNowVisible = info.visibleFraction > 0.1;
@@ -45,17 +48,9 @@ class _BlogTileState extends State<BlogTile> {
                     ? CachedNetworkImage(
                   imageUrl: widget.imageUrl,
                   fit: BoxFit.cover,
-                  // placeholder: (context, url) => Container(
-                  //   color: Colors.grey[300],
-                  //   child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                  // ),
-                  // errorWidget: (context, url, error) => Container(
-                  //   color: Colors.grey[300],
-                  //   child: Icon(Icons.broken_image, color: Colors.grey),
-                  // ),
-                ) : Container(
-                  color: Colors.grey[300],
-                ),
+                  memCacheHeight: 2000, // Adjusted for better memory handling
+                )
+                    : Container(color: Colors.grey[300]), // Empty placeholder when out of view
               ),
             ),
             SizedBox(width: 10),
@@ -93,3 +88,4 @@ class _BlogTileState extends State<BlogTile> {
     );
   }
 }
+

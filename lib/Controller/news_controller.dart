@@ -116,6 +116,10 @@ class NewsController extends GetxController {
   void _sendNextImageToIsolate() {
     if (_sendPort != null && imageUrlsQueue.isNotEmpty) {
       final imageUrl = imageUrlsQueue.removeAt(0);
+
+      // If the image is not in the visible list anymore, discard it
+      if (!imageUrlIndexMap.containsKey(imageUrl)) return;
+
       _sendPort!.send(imageUrl);
     }
   }
@@ -131,13 +135,15 @@ class NewsController extends GetxController {
         urlToImage: imageUrl,
         title: articles[index].title,
       );
-      articles.refresh(); // Refreshes only the affected item instead of the whole list
+
+      update([index]); // Update only the specific article
     }
 
     if (imageUrlsQueue.isNotEmpty) {
       _sendNextImageToIsolate();
     }
   }
+
 
   /// Isolate function to download images
   static void _imageFetcherIsolate(SendPort sendPort) {
