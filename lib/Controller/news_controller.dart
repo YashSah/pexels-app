@@ -112,8 +112,7 @@ class NewsController extends GetxController {
     }
   }
 
-
-  /// **Send one image at a time to the isolate**
+  /// Send one image at a time to the isolate
   void _sendNextImageToIsolate() {
     if (_sendPort != null && imageUrlsQueue.isNotEmpty) {
       final imageUrl = imageUrlsQueue.removeAt(0);
@@ -121,7 +120,7 @@ class NewsController extends GetxController {
     }
   }
 
-  /// **Attach image URL to article once fetched**
+  /// Attach image URL to article once fetched
   void _attachImageToArticle(Map<String, dynamic> processedImage) {
     String imageUrl = processedImage['imageUrl'];
 
@@ -132,15 +131,13 @@ class NewsController extends GetxController {
         urlToImage: imageUrl,
         title: articles[index].title,
       );
-      update(); // Ensure GetX updates the UI immediately
+      articles.refresh(); // Refreshes only the affected item instead of the whole list
     }
 
     if (imageUrlsQueue.isNotEmpty) {
       _sendNextImageToIsolate();
     }
   }
-
-
 
   /// Isolate function to download images
   static void _imageFetcherIsolate(SendPort sendPort) {

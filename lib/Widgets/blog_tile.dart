@@ -19,7 +19,7 @@ class _BlogTileState extends State<BlogTile> {
   @override
   Widget build(BuildContext context) {
     return VisibilityDetector(
-      key: UniqueKey(), // Unique key for tracking visibility
+      key:  Key(widget.imageUrl), // use a stable key
       onVisibilityChanged: (info) {
         if (mounted) {
           bool isNowVisible = info.visibleFraction > 0.1;
